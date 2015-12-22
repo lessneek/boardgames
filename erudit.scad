@@ -26,22 +26,14 @@ DEBUG_ERUDIT_CHARS_RU = [
 
 ERUDIT_CHARS = debug ? DEBUG_ERUDIT_CHARS_RU : ERUDIT_CHARS_RU;
 
-if (mode == "3d")
-    erudit(ERUDIT_CHARS);
-else if (mode == "2d")
-    projection(cut = false)
-        erudit(ERUDIT_CHARS);
+if (mode == "3d") erudit();
+else if (mode == "2d") projection(cut = false) erudit();
 
-module erudit(
-    chars,
-    board_size=BOARD_SIZE,
-    show_pads=show_pads,
-    show_text=show_text,
-    full_board=full_board)
+module erudit(chars)
 {
     char_pads(
-        chars=chars,
-        board_size=board_size,
+        chars=ERUDIT_CHARS,
+        board_size=BOARD_SIZE,
         show_pads=show_pads,
         show_text=show_text,
         full_board=full_board);
