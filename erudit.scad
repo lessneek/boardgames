@@ -1,7 +1,12 @@
 include <wordgame.scad>;
 
 debug = false;
-type = "full";
+mode = "3d"; // [2d | 3d]
+show_pads=true;
+show_text=true;
+full_board=true;
+
+BOARD_SIZE = [15, 15];
 
 // [char, count, value].
 ERUDIT_CHARS_RU = [
@@ -21,23 +26,23 @@ DEBUG_ERUDIT_CHARS_RU = [
 
 ERUDIT_CHARS = debug ? DEBUG_ERUDIT_CHARS_RU : ERUDIT_CHARS_RU;
 
-if (type == "full") erudit(ERUDIT_CHARS);
-else if (type == "pads") erudit_pads_projection(ERUDIT_CHARS);
-else if (type == "text") erudit_pads_text_projection(ERUDIT_CHARS);
-
-module erudit(chars)
-{
-    char_pads(chars=chars);
-}
-
-module erudit_pads_projection(chars)
-{
+if (mode == "3d")
+    erudit(ERUDIT_CHARS);
+else if (mode == "2d")
     projection(cut = false)
-        char_pads(chars=chars, show_text=false);
-}
+        erudit(ERUDIT_CHARS);
 
-module erudit_pads_text_projection(chars)
+module erudit(
+    chars,
+    board_size=BOARD_SIZE,
+    show_pads=show_pads,
+    show_text=show_text,
+    full_board=full_board)
 {
-    projection(cut = false)
-        char_pads(chars=chars, show_pad=false);
+    char_pads(
+        chars=chars,
+        board_size=board_size,
+        show_pads=show_pads,
+        show_text=show_text,
+        full_board=full_board);
 }

@@ -74,11 +74,11 @@ module char_pads(
     rounding=[DEFAULT_PAD_ROUNDING, DEFAULT_PAD_ROUNDING],
     font=DEFAULT_FONT,
     show_text=true,
-    show_pad=true)
+    show_pads=true,
+    full_board=true)
 {
     columns = board_size[0];
     rows = board_size[1];
-    pads_count = columns*rows;
     width = pad_size[0];
     height = pad_size[1];
     depth = pad_size[2];
@@ -88,6 +88,8 @@ module char_pads(
         for (c = chars) let (count = c[1]) for (i = [0:count-1]) [c[0],c[2]] ];
 
     chars_count = len(full_chars);
+
+    pads_count = full_board ? columns*rows : chars_count;
 
     if (chars_count > pads_count)
         echo(str(
@@ -105,10 +107,10 @@ module char_pads(
 
         translate([x*step,y*step])
         {
-            if (show_pad)
+            if (show_pads)
                 pad(pad_size=pad_size, rounding=rounding);
 
-            if (show_text && !is_empty) translate([0, 0, show_pad ? depth : 0])
+            if (show_text && !is_empty) translate([0, 0, show_pads ? depth : 0])
             {
                 c = full_chars[i];
                 char = c[0];
