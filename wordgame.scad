@@ -11,7 +11,7 @@ DEFAULT_PAD_COLOR = "Tan";
 DEFAULT_PAD_SIZE = [10*mm, 10*mm, 4*mm];
 DEFAULT_PAD_ROUNDING = 1*mm;
 DEFAULT_PAD_MARGIN = 1*mm;
-DEFAULT_ROW_LIMIT = 15;
+DEFAULT_BOARD_SIZE = [15, 15];
 
 module pad(
     pad_size = DEFAULT_PAD_SIZE,
@@ -68,7 +68,7 @@ module pad_text(
 // chars: [char, count, value].
 module char_pads(
     chars,
-    row_limit=DEFAULT_ROW_LIMIT,
+    board_size=DEFAULT_BOARD_SIZE,
     pad_size=DEFAULT_PAD_SIZE,
     pad_margin=DEFAULT_PAD_MARGIN,
     rounding=[DEFAULT_PAD_ROUNDING, DEFAULT_PAD_ROUNDING],
@@ -76,6 +76,9 @@ module char_pads(
     show_text=true,
     show_pad=true)
 {
+    columns = board_size[0];
+    rows = board_size[1];
+    pads_count = columns*rows;
     width = pad_size[0];
     height = pad_size[1];
     depth = pad_size[2];
@@ -84,22 +87,34 @@ module char_pads(
     full_chars = [
         for (c = chars) let (count = c[1]) for (i = [0:count-1]) [c[0],c[2]] ];
 
-    for (i = [0:len(full_chars)-1])
-    {
-        c = full_chars[i];
-        char = c[0];
-        value = c[1] == undef ? "" : str(c[1]);
+    chars_count = len(full_chars);
 
-        x = i % row_limit;
-        y = floor(i / row_limit);
+    if (chars_count > pads_count)
+        echo(str(
+            "<span style=\"color: red;\">",
+            "<b>WARNING: chars more than pads! Not all chars will be rendered.</b>",
+            "</span>"
+        ));
+
+    for (i = [0:pads_count-1])
+    {
+        is_empty = i >= chars_count;
+
+        x = i % columns;
+        y = floor(i / columns);
 
         translate([x*step,y*step])
         {
             if (show_pad)
                 pad(pad_size=pad_size, rounding=rounding);
 
-            if (show_text) translate([0, 0, show_pad ? depth : 0])
+            if (show_text && !is_empty) translate([0, 0, show_pad ? depth : 0])
+            {
+                c = full_chars[i];
+                char = c[0];
+                value = c[1] == undef ? "" : str(c[1]);
                 pad_text(char=char, value=value, pad_size=pad_size, font=font);
+            }
         }
     }
 }
