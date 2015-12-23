@@ -1,13 +1,15 @@
 use <wordgame.scad>;
 
-$debug = true;
-
 // Modes.
 MODE_FULL_3D = "full-3d";
 MODE_PADS_TEXT_2D = "pads-text-2d";
 MODE_PADS_2D = "pads-2d";
 MODE_BOARD_BACK_2D = "board-back-2d";
 DEFAULT_MODE = MODE_FULL_3D;
+
+// Command line variables.
+debug = false;
+mode = DEFAULT_MODE;
 
 // [char, count, value].
 ERUDIT_CHARS_RU = [
@@ -25,8 +27,8 @@ DEBUG_ERUDIT_CHARS_RU = [
     ["А", 1, 1], ["Э", 1, 10], ["\u2731", 3, undef], ["", 1, undef]
 ];
 
-DEFAULT_ERUDIT_BOARD_DIM = $debug ? [3, 3] : [15, 15];
-DEFAULT_ERUDIT_CHARS = $debug ? DEBUG_ERUDIT_CHARS_RU : ERUDIT_CHARS_RU;
+DEFAULT_ERUDIT_BOARD_DIM = debug ? [3, 3] : [15, 15];
+DEFAULT_ERUDIT_CHARS = debug ? DEBUG_ERUDIT_CHARS_RU : ERUDIT_CHARS_RU;
 
 module withmode(mode)
 {
@@ -79,5 +81,4 @@ module erudit(
     );
 }
 
-mode = $mode ? $mode : DEFAULT_MODE;
 erudit(mode = mode);
