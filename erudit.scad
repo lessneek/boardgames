@@ -1,12 +1,13 @@
-include <wordgame.scad>;
+use <wordgame.scad>;
 
-debug = false;
-mode = "3d"; // [2d | 3d]
-show_pads=true;
-show_text=true;
-full_board=true;
+$debug = true;
 
-BOARD_SIZE = [15, 15];
+// Modes.
+MODE_FULL_3D = "full-3d";
+MODE_PADS_TEXT_2D = "pads-text-2d";
+MODE_PADS_2D = "pads-2d";
+MODE_BOARD_BACK_2D = "board-back-2d";
+DEFAULT_MODE = MODE_FULL_3D;
 
 // [char, count, value].
 ERUDIT_CHARS_RU = [
@@ -21,20 +22,62 @@ ERUDIT_CHARS_RU = [
 
 // [char, count, value].
 DEBUG_ERUDIT_CHARS_RU = [
-    ["А", 1, 1], ["Э", 1, 10], ["\u2731", 1, undef], ["", 1, undef]
+    ["А", 1, 1], ["Э", 1, 10], ["\u2731", 3, undef], ["", 1, undef]
 ];
 
-ERUDIT_CHARS = debug ? DEBUG_ERUDIT_CHARS_RU : ERUDIT_CHARS_RU;
+DEFAULT_ERUDIT_BOARD_DIM = $debug ? [3, 3] : [15, 15];
+DEFAULT_ERUDIT_CHARS = $debug ? DEBUG_ERUDIT_CHARS_RU : ERUDIT_CHARS_RU;
 
-if (mode == "3d") erudit();
-else if (mode == "2d") projection(cut = false) erudit();
-
-module erudit(chars)
+module withmode(mode)
 {
-    char_pads(
-        chars=ERUDIT_CHARS,
-        board_size=BOARD_SIZE,
-        show_pads=show_pads,
-        show_text=show_text,
-        full_board=full_board);
+    $show_text = false;
+    $show_pads = false;
+    $show_board_matrix = false;
+    $show_board_back = false;
+    $fill_board = false;
+
+    if (mode == MODE_FULL_3D)
+    {
+        $show_pads = true;
+        $show_text = true;
+        $show_board_matrix = true;
+        $show_board_back = true;
+        $fill_board = true;
+        children();
+    }
+    else if (mode == MODE_PADS_TEXT_2D)
+    {
+        $show_text = true;
+        projection(cut = false) children();
+    }
+    else if (mode == MODE_PADS_2D)
+    {
+        $show_pads = true;
+        $fill_board = true;
+        projection(cut = false) children();
+    }
+    else if (mode == MODE_BOARD_BACK_2D)
+    {
+        $show_board_back = true;
+        projection(cut = false) children();
+    }
 }
+
+module erudit(
+    chars = DEFAULT_ERUDIT_CHARS,
+    board_dim = DEFAULT_ERUDIT_BOARD_DIM,
+    mode = DEFAULT_MODE)
+{
+    withmode(mode) wordgame(
+        chars = chars,
+        board_dim = board_dim,
+        show_pads = $show_pads,
+        show_text = $show_text,
+        show_board_matrix = $show_board_matrix,
+        show_board_back = $show_board_back,
+        fill_board = $fill_board
+    );
+}
+
+mode = $mode ? $mode : DEFAULT_MODE;
+erudit(mode = mode);
