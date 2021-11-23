@@ -1,6 +1,6 @@
 # Board games
 
-Boards games made with OpenSCAD. Each board layer can be exported separately to `dxf` or `svg` for a laser cutting machine.
+Board games made with OpenSCAD. Each board layer can be exported separately to `dxf` or `svg` for a laser cutting machine.
 
 ## Word games
 
